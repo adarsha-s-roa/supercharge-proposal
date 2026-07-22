@@ -237,24 +237,23 @@
     .card{ padding:24px 20px; }
   }
 
-@media (max-width:768px){
-nav{top:10px;padding:8px 14px;gap:8px}
+.mark span{display:inline-block;animation:arrowMove 1.8s ease-in-out infinite}
+@keyframes arrowMove{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+nav{transition:all .35s ease}
+nav.scrolled{padding:8px 16px;background:rgba(241,236,222,.96);backdrop-filter:blur(16px);box-shadow:0 10px 25px rgba(0,0,0,.08)}
+@media(max-width:768px){
+nav{top:10px;padding:8px 14px}
 nav .for-line{display:none}
 section{padding:64px 20px}
 .hero{min-height:85vh;padding-top:72px}
 .hero h1{font-size:2.2rem;line-height:1.2;max-width:100%}
-.hero p.sub{font-size:1rem;margin-top:18px}
-.cards{grid-template-columns:1fr}
-.card{padding:22px 18px}
-.metrics{grid-template-columns:1fr;gap:22px}
+.hero p.sub{font-size:1rem}
+.cards,.metrics{grid-template-columns:1fr}
 .translate-row{grid-template-columns:1fr;gap:14px}
-.arrow{transform:rotate(90deg);justify-content:flex-start}
-.cta-row{flex-direction:column}
-.btn{width:100%;text-align:center;padding:16px}
-#toTop{width:52px;height:52px;right:16px;bottom:16px}
-h2{line-height:1.25}
+.arrow{transform:none!important;font-size:1.5rem;justify-content:center;height:auto;margin:6px 0}
+.cta-row{flex-direction:column}.btn{width:100%;text-align:center}
+#toTop{width:52px;height:52px}
 }
-
 </style>
 </head>
 <body>
@@ -316,25 +315,25 @@ h2{line-height:1.25}
 
   <div class="translate-row reveal">
     <div class="from"><span class="label">what it is</span>A full-stack build (Needlepusher)</div>
-    <div class="arrow">&rarr;</div>
+    <div class="arrow">&#8595;</div>
     <div class="to"><span class="label">what it becomes here</span>A booking-to-payment flow for your workshops that doesn't lose a single "interested" between the landing page and the paid seat.</div>
   </div>
 
   <div class="translate-row reveal delay-1">
     <div class="from"><span class="label">what it is</span>₹70L+ in leads, 2 clients closed at ₹15L</div>
-    <div class="arrow">&rarr;</div>
+    <div class="arrow">&#8595;</div>
     <div class="to"><span class="label">what it becomes here</span>The same pipeline discipline, pointed at filling your next cohort instead of a B2B deal &mdash; measured by seats filled, not impressions.</div>
   </div>
 
   <div class="translate-row reveal delay-2">
     <div class="from"><span class="label">what it is</span>Reporting that runs automatically</div>
-    <div class="arrow">&rarr;</div>
+    <div class="arrow">&#8595;</div>
     <div class="to"><span class="label">what it becomes here</span>A weekly number you can trust &mdash; cost per registration, show-up rate, repeat attendees &mdash; without anyone assembling it by hand.</div>
   </div>
 
   <div class="translate-row reveal delay-3">
     <div class="from"><span class="label">what it is</span>Creative ownership across a team</div>
-    <div class="arrow">&rarr;</div>
+    <div class="arrow">&#8595;</div>
     <div class="to"><span class="label">what it becomes here</span>Someone who sits between your editor, designer and developer so their work reads as one practice &mdash; and tells you plainly what wasn't working before, so it doesn't repeat.</div>
   </div>
 
@@ -442,6 +441,9 @@ h2{line-height:1.25}
   }, { threshold:0.4 });
   counters.forEach(function(el){ cIo.observe(el); });
 })();
+
+window.addEventListener('scroll',()=>{document.querySelector('nav').classList.toggle('scrolled',window.scrollY>40);});
+
 </script>
 </body>
 </html>
