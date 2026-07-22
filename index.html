@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beyond Ad Optimization — a proposal for your practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12182B;
+    --panel:#171E33;
+    --panel-2:#1E273F;
+    --paper:#F1ECDE;
+    --paper-2:#E7DFC9;
+    --brass:#B9832E;
+    --brass-deep:#8F651F;
+    --brass-light:#E7C57A;
+    --sage:#4F7A64;
+    --sage-light:#8FB39D;
+    --chalk:#EDE7D9;
+    --chalk-dim:#C9C2AE;
+    --muted:#8791A8;
+    --muted-paper:#5B5646;
+    --line-dark: rgba(237,231,217,0.12);
+    --line-dark-strong: rgba(237,231,217,0.22);
+    --line-light: rgba(18,24,43,0.12);
+    --line-light-strong: rgba(18,24,43,0.22);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  ::selection{ background:var(--brass); color:var(--ink); }
+
+  /* Custom scrollbar only — no scroll-progress UI */
+  ::-webkit-scrollbar{ width:11px; }
+  ::-webkit-scrollbar-track{ background:var(--paper-2); }
+  ::-webkit-scrollbar-thumb{
+    background:linear-gradient(var(--brass), var(--sage));
+    border-radius:6px;
+    border:3px solid var(--paper-2);
+  }
+  ::-webkit-scrollbar-thumb:hover{ background:var(--brass-light); }
+  html{ scrollbar-color: var(--brass) var(--paper-2); scrollbar-width:thin; }
+
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:600; }
+  em{ font-style:italic; font-weight:500; }
+  .num{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; }
+
+  /* ---------- Nav (a small floating chip, readable over any section) ---------- */
+  nav{
+    position:fixed; top:18px; left:50%; transform:translateX(-50%); z-index:100;
+    display:flex; align-items:center; gap:14px;
+    padding:10px 18px;
+    background:rgba(241,236,222,0.88);
+    border:1px solid var(--line-light-strong);
+    border-radius:999px;
+    backdrop-filter:blur(8px);
+    max-width:92vw;
+  }
+  nav .mark{
+    font-family:'Fraunces', serif; font-weight:600; font-size:0.92rem;
+    color:var(--ink); white-space:nowrap;
+  }
+  nav .mark span{ color:var(--brass-deep); }
+  nav .for-line{
+    font-family:'IBM Plex Mono', monospace; font-size:0.62rem; color:var(--muted-paper);
+    letter-spacing:0.05em; white-space:nowrap;
+    border-left:1px solid var(--line-light-strong); padding-left:14px;
+  }
+  @media (max-width:520px){ nav .for-line{ display:none; } }
+
+  /* ---------- Sections & theme tokens ---------- */
+  section{
+    position:relative;
+    padding:min(14vh,120px) 6vw;
+  }
+  section > *{ max-width:1180px; margin-left:auto; margin-right:auto; }
+  section.on-dark{
+    background:var(--ink); color:var(--chalk);
+    --text-strong:var(--chalk); --text-dim:var(--chalk-dim);
+    --line:var(--line-dark); --line-strong:var(--line-dark-strong);
+    --accent:var(--brass-light); --accent2:var(--sage-light);
+    --card-bg:var(--panel); --card-bg-hover:var(--panel-2);
+  }
+  section.on-light{
+    background:var(--paper); color:var(--ink);
+    --text-strong:var(--ink); --text-dim:var(--muted-paper);
+    --line:var(--line-light); --line-strong:var(--line-light-strong);
+    --accent:var(--brass-deep); --accent2:var(--sage);
+    --card-bg:var(--paper-2); --card-bg-hover:#DED5B9;
+  }
+
+  .reveal{ opacity:0; transform:translateY(24px); transition:opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+  .reveal.delay-1{ transition-delay:0.08s; }
+  .reveal.delay-2{ transition-delay:0.16s; }
+  .reveal.delay-3{ transition-delay:0.24s; }
+  .reveal.delay-4{ transition-delay:0.32s; }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding-top:120px;
+  }
+  .hero .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--accent); margin-bottom:22px;
+  }
+  .hero h1{
+    font-size:clamp(2rem, 5.4vw, 4.1rem);
+    line-height:1.14; max-width:16ch; letter-spacing:-0.01em;
+  }
+  .hero h1 em{ color:var(--accent); }
+  .hero p.sub{ margin-top:26px; max-width:52ch; font-size:1.05rem; color:var(--text-dim); }
+
+  .ambient{
+    position:absolute; inset:0; z-index:-1; overflow:hidden;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse 60% 50% at 30% 30%, black, transparent 75%);
+    -webkit-mask-image:radial-gradient(ellipse 60% 50% at 30% 30%, black, transparent 75%);
+    animation:drift 44s linear infinite;
+  }
+  @keyframes drift{ from{ background-position:0 0,0 0; } to{ background-position:56px 112px, 112px 56px; } }
+
+  /* ---------- Divider label ---------- */
+  .section-label{ display:flex; align-items:baseline; gap:16px; margin-bottom:18px; }
+  .section-label .idx{ font-family:'IBM Plex Mono', monospace; color:var(--accent2); font-size:0.78rem; }
+  .section-label .line{ flex:1; height:1px; background:var(--line); }
+
+  /* ---------- Gap section ---------- */
+  .gap h2{ font-size:clamp(1.5rem,3.4vw,2.3rem); max-width:20ch; margin-bottom:24px; color:var(--text-strong); }
+  .gap .quote{
+    border-left:2px solid var(--accent);
+    padding:4px 0 4px 22px;
+    font-family:'Fraunces', serif; font-style:italic; font-size:1.1rem;
+    color:var(--text-dim); max-width:56ch; margin:26px 0;
+  }
+  .gap p{ max-width:60ch; color:var(--text-dim); margin-bottom:16px; }
+
+  /* ---------- Cards ---------- */
+  .cards{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:1px; background:var(--line); border:1px solid var(--line); margin-top:36px;
+    border-radius:3px; overflow:hidden;
+  }
+  .card{
+    background:var(--card-bg); padding:30px 26px; position:relative;
+    transition:background 0.35s ease, transform 0.35s ease;
+  }
+  .card:hover{ background:var(--card-bg-hover); transform:translateY(-4px); }
+  .card .tickno{ font-family:'IBM Plex Mono', monospace; color:var(--accent); font-size:0.74rem; letter-spacing:0.06em; margin-bottom:12px; display:block; }
+  .card h3{ font-size:1.2rem; margin-bottom:10px; color:var(--text-strong); }
+  .card p{ color:var(--text-dim); font-size:0.92rem; }
+
+  /* ---------- Translate section ---------- */
+  .translate-row{
+    display:grid; grid-template-columns:1fr 40px 1fr;
+    gap:0; align-items:center;
+    padding:24px 0; border-top:1px solid var(--line);
+  }
+  .translate-row:last-child{ border-bottom:1px solid var(--line); }
+  .translate-row .from{ color:var(--text-dim); font-size:0.92rem; }
+  .translate-row .from .label{ font-family:'IBM Plex Mono', monospace; font-size:0.64rem; color:var(--accent2); letter-spacing:0.08em; text-transform:uppercase; display:block; margin-bottom:8px; }
+  .translate-row .to{ font-size:1rem; color:var(--text-strong); }
+  .translate-row .to .label{ font-family:'IBM Plex Mono', monospace; font-size:0.64rem; color:var(--accent); letter-spacing:0.08em; text-transform:uppercase; display:block; margin-bottom:8px; }
+  .arrow{ display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:1.15rem; }
+  @media (max-width:720px){
+    .translate-row{ grid-template-columns:1fr; gap:12px; padding:20px 0; }
+    .arrow{ transform:rotate(90deg); justify-content:flex-start; height:18px; }
+  }
+
+  /* ---------- Proof / metrics ---------- */
+  .metrics{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:32px; margin-top:34px; }
+  .metric .value{ font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:clamp(1.9rem,4.4vw,3rem); color:var(--accent); letter-spacing:-0.01em; }
+  .metric .desc{ margin-top:8px; color:var(--text-dim); font-size:0.88rem; max-width:26ch; }
+  @media (max-width:420px){ .metrics{ grid-template-columns:1fr 1fr; } }
+
+  /* ---------- Close ---------- */
+  .close h2{ font-size:clamp(1.7rem,4vw,2.7rem); max-width:18ch; color:var(--text-strong); }
+  .close p{ margin-top:20px; max-width:56ch; color:var(--text-dim); font-size:1.02rem; }
+  .close .signoff{ margin-top:38px; font-family:'Fraunces', serif; font-style:italic; color:var(--text-strong); font-size:1.05rem; }
+  .cta-row{ margin-top:36px; display:flex; gap:16px; flex-wrap:wrap; }
+  .btn{
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.05em;
+    padding:13px 24px; border-radius:2px; text-decoration:none; display:inline-block;
+    transition:transform 0.25s ease, background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+  .btn-primary{ background:var(--brass); color:#FFF9EE; font-weight:600; }
+  .btn-primary:hover{ background:var(--brass-deep); transform:translateY(-2px); }
+  .btn-ghost{ border:1px solid var(--line-strong); color:var(--text-strong); }
+  .btn-ghost:hover{ border-color:var(--accent2); color:var(--accent2); transform:translateY(-2px); }
+
+  footer{
+    padding:30px 6vw 50px; text-align:center;
+    color:var(--chalk-dim); font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.05em;
+    background:var(--ink);
+  }
+
+  /* ---------- Back to top ---------- */
+  #toTop{
+    position:fixed; right:20px; bottom:20px; z-index:200;
+    width:44px; height:44px; border-radius:50%;
+    background:var(--ink); border:1px solid rgba(237,231,217,0.2);
+    color:var(--brass-light); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; opacity:0; pointer-events:none; transform:translateY(12px);
+    transition:opacity 0.35s ease, transform 0.35s ease, background 0.3s ease;
+    box-shadow:0 6px 18px rgba(18,24,43,0.25);
+  }
+  #toTop.show{ opacity:1; pointer-events:auto; transform:translateY(0); }
+  #toTop:hover{ background:var(--brass); color:var(--ink); }
+  #toTop svg{ width:17px; height:17px; }
+
+  @media (max-width:600px){
+    section{ padding:80px 6vw; }
+    .hero{ padding-top:100px; }
+    .card{ padding:24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="mark">workshop <span>&rarr;</span> system</div>
+  <div class="for-line">PREPARED FOR ROHINI</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero on-dark" id="top-anchor">
+  <div class="ambient"></div>
+  <div class="eyebrow">A proposal, not a pitch</div>
+  <h1>You've built something people take a day off work to attend. <em>Let's build what happens after they leave the room.</em></h1>
+  <p class="sub">This isn't another deck about ad spend. It's about the part of your business that runs between the workshop ending and the next cohort filling &mdash; and what I'd bring to it beyond optimizing what's already there.</p>
+</section>
+
+<!-- THE GAP -->
+<section class="gap on-light">
+  <div class="section-label"><span class="idx">01 / the question</span><div class="line"></div></div>
+  <h2 class="reveal">You asked what I bring beyond optimization. Fair question.</h2>
+  <p class="reveal delay-1">You've already got a content team, an editor, a designer and a developer in place. The last setup didn't deliver what it should have. So the honest answer isn't "better ads." It's someone who sits across all four of those people and the funnel underneath them &mdash; and makes sure their combined output actually turns into filled cohorts.</p>
+  <div class="quote reveal delay-2">"What do you bring to the table apart from this?"</div>
+  <p class="reveal delay-3">Here's what I'd put on the table if the answer to that has to be more than media buying.</p>
+</section>
+
+<!-- FOUR THINGS -->
+<section class="things on-dark" id="things">
+  <div class="section-label"><span class="idx">02 / beyond media buying</span><div class="line"></div></div>
+  <h2 class="reveal" style="max-width:26ch; color:var(--text-strong);">Four things that don't show up on an ad dashboard</h2>
+  <div class="cards">
+    <div class="card reveal delay-1">
+      <span class="tickno">01 &mdash; built, not just run</span>
+      <h3>A full-stack build, start to finish</h3>
+      <p>Needlepusher &mdash; a product I built solo: the web app, the payment flow, the database behind it. I've owned the whole chain from "someone lands on a page" to "money clears," not just the media spend that got them there.</p>
+    </div>
+    <div class="card reveal delay-2">
+      <span class="tickno">02 &mdash; pipeline, not just clicks</span>
+      <h3>A B2B pipeline that closes</h3>
+      <p>₹70L+ in leads generated, translated into two closed clients at ₹15L each. The number that matters isn't reach &mdash; it's what actually converted into signed revenue.</p>
+    </div>
+    <div class="card reveal delay-3">
+      <span class="tickno">03 &mdash; habits, not fire drills</span>
+      <h3>Reporting that runs on its own</h3>
+      <p>Scripts that pull the numbers &mdash; spend, leads, conversions &mdash; straight from the ad and CRM accounts and lay them out automatically, so the weekly report is already sitting there Monday morning instead of being pieced together by hand.</p>
+    </div>
+    <div class="card reveal delay-4">
+      <span class="tickno">04 &mdash; one voice, not four</span>
+      <h3>Creative ownership across a team</h3>
+      <p>Logo work, content direction, and the discipline of making sure an editor, a designer and a developer's separate outputs add up to one brand &mdash; not three good ones that don't agree with each other.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TRANSLATE -->
+<section class="translate on-light">
+  <div class="section-label"><span class="idx">03 / what this means for your practice</span><div class="line"></div></div>
+  <h2 class="reveal" style="max-width:24ch;">Translated into what a workshop business actually needs</h2>
+
+  <div class="translate-row reveal">
+    <div class="from"><span class="label">what it is</span>A full-stack build (Needlepusher)</div>
+    <div class="arrow">&rarr;</div>
+    <div class="to"><span class="label">what it becomes here</span>A booking-to-payment flow for your workshops that doesn't lose a single "interested" between the landing page and the paid seat.</div>
+  </div>
+
+  <div class="translate-row reveal delay-1">
+    <div class="from"><span class="label">what it is</span>₹70L+ in leads, 2 clients closed at ₹15L</div>
+    <div class="arrow">&rarr;</div>
+    <div class="to"><span class="label">what it becomes here</span>The same pipeline discipline, pointed at filling your next cohort instead of a B2B deal &mdash; measured by seats filled, not impressions.</div>
+  </div>
+
+  <div class="translate-row reveal delay-2">
+    <div class="from"><span class="label">what it is</span>Reporting that runs automatically</div>
+    <div class="arrow">&rarr;</div>
+    <div class="to"><span class="label">what it becomes here</span>A weekly number you can trust &mdash; cost per registration, show-up rate, repeat attendees &mdash; without anyone assembling it by hand.</div>
+  </div>
+
+  <div class="translate-row reveal delay-3">
+    <div class="from"><span class="label">what it is</span>Creative ownership across a team</div>
+    <div class="arrow">&rarr;</div>
+    <div class="to"><span class="label">what it becomes here</span>Someone who sits between your editor, designer and developer so their work reads as one practice &mdash; and tells you plainly what wasn't working before, so it doesn't repeat.</div>
+  </div>
+
+  <div class="reveal delay-4" style="margin-top:34px;">
+    <a class="btn btn-ghost" href="https://adarsha-s-roa.github.io/Adarsha-Portfolio/" id="portfolioLink" target="_blank" rel="noopener">See the full portfolio &rarr;</a>
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="proof on-dark">
+  <div class="section-label"><span class="idx">04 / the numbers so far</span><div class="line"></div></div>
+  <h2 class="reveal" style="color:var(--text-strong);">Not projections. What's already happened.</h2>
+  <div class="metrics">
+    <div class="metric reveal">
+      <div class="value"><span class="counter" data-target="70" data-prefix="₹" data-suffix="L+">0</span></div>
+      <div class="desc">in B2B leads generated and tracked to source</div>
+    </div>
+    <div class="metric reveal delay-1">
+      <div class="value"><span class="counter" data-target="2" data-suffix="">0</span></div>
+      <div class="desc">clients closed directly from that pipeline</div>
+    </div>
+    <div class="metric reveal delay-2">
+      <div class="value"><span class="counter" data-target="15" data-prefix="₹" data-suffix="L">0</span></div>
+      <div class="desc">deal size, each of the two closed clients</div>
+    </div>
+    <div class="metric reveal delay-3">
+      <div class="value"><span class="counter" data-target="1" data-suffix="">0</span></div>
+      <div class="desc">person owning the whole chain, end to end</div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSE -->
+<section class="close on-light">
+  <div class="section-label"><span class="idx">05 / next step</span><div class="line"></div></div>
+  <h2 class="reveal">If this is the shape you were hoping for &mdash; let's talk about the first 90 days.</h2>
+  <p class="reveal delay-1">Not a retainer pitch, and not a request for a title. Just a straight conversation about where the funnel is leaking, what the current team needs from someone above the media spend, and whether that someone should be me.</p>
+  <p class="signoff reveal delay-2">Whenever you're free &mdash; I'll send the calendar link, or you tell me what works.</p>
+  <div class="cta-row reveal delay-3">
+    <a class="btn btn-primary" href="#top-anchor">Back to the start</a>
+    <a class="btn btn-ghost" href="#things">Review what I bring</a>
+  </div>
+</section>
+
+<footer>Prepared as a follow-up to our conversation &middot; built to be read once, not skimmed</footer>
+
+<button id="toTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+</button>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Scroll reveal
+  var revealEls = document.querySelectorAll('.reveal');
+  if(reduced){
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add('in'); io.unobserve(entry.target); }
+      });
+    }, { threshold:0.15 });
+    revealEls.forEach(function(el){ io.observe(el); });
+  }
+
+  // Back to top button
+  var toTop = document.getElementById('toTop');
+  function onScroll(){
+    var scrollTop = window.scrollY || document.documentElement.scrollTop;
+    if(scrollTop > window.innerHeight * 0.8){ toTop.classList.add('show'); }
+    else { toTop.classList.remove('show'); }
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+  toTop.addEventListener('click', function(){
+    window.scrollTo({ top:0, behavior: reduced ? 'auto' : 'smooth' });
+  });
+
+  // Counter animation
+  var counters = document.querySelectorAll('.counter');
+  var animated = new WeakSet();
+  var cIo = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting && !animated.has(entry.target)){
+        animated.add(entry.target);
+        var el = entry.target;
+        var target = parseFloat(el.getAttribute('data-target'));
+        var prefix = el.getAttribute('data-prefix') || '';
+        var suffix = el.getAttribute('data-suffix') || '';
+        if(reduced){ el.textContent = prefix + target + suffix; return; }
+        var duration = 1100, startTime = null;
+        function step(ts){
+          if(!startTime) startTime = ts;
+          var progress = Math.min(1, (ts - startTime) / duration);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          var value = Math.round(eased * target);
+          el.textContent = prefix + value + suffix;
+          if(progress < 1){ requestAnimationFrame(step); }
+        }
+        requestAnimationFrame(step);
+      }
+    });
+  }, { threshold:0.4 });
+  counters.forEach(function(el){ cIo.observe(el); });
+})();
+</script>
+</body>
+</html>
